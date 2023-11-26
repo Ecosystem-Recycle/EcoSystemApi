@@ -2,6 +2,7 @@ package com.senai.apiecosystem.controllers;
 
 
 import com.senai.apiecosystem.dtos.UsuarioDto;
+import com.senai.apiecosystem.models.EnderecoModel;
 import com.senai.apiecosystem.models.TipoUsuarioModel;
 import com.senai.apiecosystem.models.UsuarioModel;
 import com.senai.apiecosystem.repositories.EnderecoRepository;
@@ -72,30 +73,32 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Esse email já está cadastrado!");
         }
 
-        UsuarioModel usuarioModel = new UsuarioModel();
+        UsuarioModel usuarioNovo = new UsuarioModel();
 
-        BeanUtils.copyProperties(usuarioDto, usuarioModel);
+        BeanUtils.copyProperties(usuarioDto, usuarioNovo);
 
         Optional<TipoUsuarioModel> tipoUsuario = tipoUsuarioRepository.findByNome(usuarioDto.tipo_User());
 
         if (tipoUsuario.isPresent()) {
-            usuarioModel.setTipousuario(tipoUsuario.get());
+            usuarioNovo.setTipousuario(tipoUsuario.get());
         }else{
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id_tipousuario não encontrado");
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID do Tipo Usuario não encontrado");
         }
 
-        var endereco = enderecoRepository.findById(usuarioDto.endereco_id());
+        Optional<EnderecoModel> endereco = enderecoRepository.findById(usuarioDto.endereco_id());
 
         if (endereco.isPresent()) {
-            usuarioModel.setEndereco(endereco.get());
+            usuarioNovo.setEndereco(endereco.get());
         } else {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id_Endereço não encontrado");
         }
 
-        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.senha());
-        usuarioModel.setSenha(senhaCriptografada);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRepository.save(usuarioModel));
+
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.senha());
+        usuarioNovo.setSenha(senhaCriptografada);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRepository.save(usuarioNovo));
     }
 
     @Operation(summary = "Método para ALTERAR um determinado usuário especificando sua ID", method = "PUT")
@@ -111,11 +114,19 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario não encontrado");
         }
 
+
         UsuarioModel usuario = usuarioBuscado.get();
         BeanUtils.copyProperties(usuarioDto, usuario);
 
         String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.senha());
         usuario.setSenha(senhaCriptografada);
+
+        Optional<TipoUsuarioModel> tipoUsuario = tipoUsuarioRepository.findByNome(usuarioDto.tipo_User());
+        if (tipoUsuario.isPresent()) {
+            usuario.setTipousuario(tipoUsuario.get());
+        }else{
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID Tipo Usuario não encontrado");
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRepository.save(usuario));
     }

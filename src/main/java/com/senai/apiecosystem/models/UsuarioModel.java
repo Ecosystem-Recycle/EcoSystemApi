@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "tb_usuario")
+@Table(name = "usuario")
 public class UsuarioModel implements Serializable, UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -43,10 +43,9 @@ public class UsuarioModel implements Serializable, UserDetails {
     private TipoUsuarioModel tipousuario;
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private EnderecoModel endereco;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
