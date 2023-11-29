@@ -9,6 +9,8 @@ public record ColetaDto(
 
         @NotBlank String disponibilidade,
 
+        @NotNull UUID usuario_id,
+
         @NotNull UUID anuncio_id,
 
         @NotNull UUID tipo_status_id
