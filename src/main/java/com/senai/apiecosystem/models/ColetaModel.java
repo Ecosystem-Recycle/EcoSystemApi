@@ -26,10 +26,6 @@ public class ColetaModel implements Serializable{
 
     private String disponibilidade;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
-    private UsuarioModel usuario;
-
     @OneToOne
     @JoinColumn(name = "anuncio_id", referencedColumnName = "id")
     private AnuncioModel anuncio;

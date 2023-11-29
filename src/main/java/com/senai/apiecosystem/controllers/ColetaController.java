@@ -28,9 +28,6 @@ public class ColetaController {
     ColetaRepository coletaRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
     private AnuncioRepository anuncioRepository;
 
     @Autowired
@@ -72,13 +69,11 @@ public class ColetaController {
 
         BeanUtils.copyProperties(coletaDto, coletaModel);
 
-        var usuario = usuarioRepository.findById(coletaDto.usuario_id());
         var anuncio = anuncioRepository.findById(coletaDto.anuncio_id());
         var tipoStatus = tipoStatusRepository.findById(coletaDto.tipo_status_id());
         LocalDate date = LocalDate.now();
 
-        if (usuario.isPresent() && anuncio.isPresent() && tipoStatus.isPresent()) {
-            coletaModel.setUsuario(usuario.get());
+        if (anuncio.isPresent() && tipoStatus.isPresent()) {
             coletaModel.setAnuncio(anuncio.get());
             coletaModel.setTipo_status(tipoStatus.get());
             coletaModel.setData_cadastro(date);
