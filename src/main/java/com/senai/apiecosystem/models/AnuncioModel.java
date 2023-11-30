@@ -34,10 +34,10 @@ public class AnuncioModel implements Serializable{
 
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
-    private UsuarioModel usuario;
+    private UsuarioModel usuario_doador;
 
     @OneToOne
     @JoinColumn(name = "tipo_status_id", referencedColumnName = "id")
-    private TipoStatusModel tipo_status;
+    private TipoStatusModel tipo_status_anuncio;
 
 }

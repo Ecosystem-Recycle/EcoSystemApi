@@ -28,7 +28,7 @@ public class ColetaModel implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id")
-    private UsuarioModel usuario;
+    private UsuarioModel usuario_coleta;
 
     @OneToOne
     @JoinColumn(name = "anuncio_id", referencedColumnName = "id")
@@ -36,7 +36,7 @@ public class ColetaModel implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "tipo_status_id", referencedColumnName = "id")
-    private TipoStatusModel tipo_status;
+    private TipoStatusModel tipo_status_coleta;
 
 
 }

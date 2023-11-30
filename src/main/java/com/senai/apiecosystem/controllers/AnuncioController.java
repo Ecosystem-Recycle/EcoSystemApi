@@ -84,8 +84,8 @@ public class AnuncioController {
 
 
         if (usuario.isPresent() && tipoStatus.isPresent()) {
-            anuncioModel.setUsuario(usuario.get());
-            anuncioModel.setTipo_status(tipoStatus.get());
+            anuncioModel.setUsuario_doador(usuario.get());
+            anuncioModel.setTipo_status_anuncio(tipoStatus.get());
             anuncioModel.setData_cadastro(date);
             anuncioModel.setUrl_imagem(urlImagem);
 

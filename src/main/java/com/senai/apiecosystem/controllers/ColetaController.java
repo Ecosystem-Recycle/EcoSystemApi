@@ -78,9 +78,9 @@ public class ColetaController {
         LocalDate date = LocalDate.now();
 
         if (usuario.isPresent() && anuncio.isPresent() && tipoStatus.isPresent()) {
-            coletaModel.setUsuario(usuario.get());
+            coletaModel.setUsuario_coleta(usuario.get());
             coletaModel.setAnuncio(anuncio.get());
-            coletaModel.setTipo_status(tipoStatus.get());
+            coletaModel.setTipo_status_coleta(tipoStatus.get());
             coletaModel.setData_cadastro(date);
 
         } else {
