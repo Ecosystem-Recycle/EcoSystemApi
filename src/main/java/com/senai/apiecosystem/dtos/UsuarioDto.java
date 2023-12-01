@@ -18,8 +18,6 @@ public record UsuarioDto(
 
         String tipo_User,
 
-        @NotNull UUID tipo_usuario_id,
-
         UUID endereco_id
 
 ) {
