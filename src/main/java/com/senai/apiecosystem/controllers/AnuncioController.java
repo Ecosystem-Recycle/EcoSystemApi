@@ -2,6 +2,8 @@ package com.senai.apiecosystem.controllers;
 
 import com.senai.apiecosystem.dtos.AnuncioDto;
 import com.senai.apiecosystem.models.AnuncioModel;
+import com.senai.apiecosystem.models.TipoStatusModel;
+import com.senai.apiecosystem.models.TipoUsuarioModel;
 import com.senai.apiecosystem.repositories.AnuncioRepository;
 import com.senai.apiecosystem.repositories.TipoStatusRepository;
 import com.senai.apiecosystem.repositories.UsuarioRepository;
@@ -71,7 +73,7 @@ public class AnuncioController {
         BeanUtils.copyProperties(anuncioDto, anuncioModel);
 
         var usuario = usuarioRepository.findById(anuncioDto.usuario_id());
-        var tipoStatus = tipoStatusRepository.findById(anuncioDto.tipo_status_id());
+        Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(anuncioDto.tipo_status());
 
         LocalDate date = LocalDate.now();
 

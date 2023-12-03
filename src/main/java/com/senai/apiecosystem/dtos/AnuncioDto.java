@@ -13,7 +13,7 @@ public record AnuncioDto(
         @NotBlank String periodo,
         MultipartFile imagem,
         @NotNull UUID usuario_id,
-        @NotNull UUID tipo_status_id
 
+        @NotBlank String tipo_status
 ) {
 }
