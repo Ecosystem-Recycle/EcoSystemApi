@@ -9,8 +9,6 @@ import java.util.UUID;
 public record EnderecoDto(
         @NotBlank String id,
 
-        @NotBlank @Email(message = "O Email deve estar em formato válido") String email,
-
         @NotBlank String logradouro,
 
         String numero,
@@ -20,11 +18,7 @@ public record EnderecoDto(
         String cidade,
 
         String estado,
-        String cep,
-
-        @NotNull UUID id_tipoendereco,
-
-        UUID id_endereco
+        String cep
 
 ) {
 

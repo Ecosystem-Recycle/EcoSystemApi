@@ -1,4 +1,4 @@
-package com.senai.apiecosystem.repositories;
+package com.senai.apiecosystem.Repositories;
 
 import com.senai.apiecosystem.models.EnderecoModel;
 import org.springframework.data.jpa.repository.JpaRepository;

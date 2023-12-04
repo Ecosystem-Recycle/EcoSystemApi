@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "tb_endereco")
+@Table(name = "endereco")
 public class EnderecoModel implements Serializable{
     @Serial
     private static final long serialVersionUID = 1;
@@ -32,15 +32,4 @@ public class EnderecoModel implements Serializable{
     private String estado;
 
     private String cep;
-
-
-
-    @OneToOne
-    @JoinColumn(name = "id_tipoendereco", referencedColumnName = "id")
-    private EnderecoModel tipoendereco;
-
-    @OneToOne
-    @JoinColumn(name = "id_endereco", referencedColumnName = "id")
-    private EnderecoModel endereco;
-
 }
