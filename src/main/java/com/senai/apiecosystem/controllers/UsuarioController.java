@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(value = "/usuarios", produces = {"application/json"})
 public class UsuarioController {
     @Autowired

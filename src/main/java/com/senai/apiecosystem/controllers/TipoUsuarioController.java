@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(value = "/tipo_usuarios", produces = {"application/json"})
 public class TipoUsuarioController {
     @Autowired

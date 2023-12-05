@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(value = "/produto", produces = {"application/json"})
 public class ProdutoController {
     @Autowired
