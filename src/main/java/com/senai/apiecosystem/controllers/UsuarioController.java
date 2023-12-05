@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,24 @@ public class UsuarioController {
     @GetMapping("/{idUsuario}")
     public ResponseEntity<Object> exibirUsuario(@PathVariable(value = "idUsuario") UUID id) {
         Optional<UsuarioModel> usuarioBuscado = usuarioRepository.findById(id);
+
+        if (usuarioBuscado.isEmpty()) {
+            // Retornar usuario não encontrado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(usuarioBuscado.get());
+    }
+
+    @Operation(summary = "Método para CONSULTAR um determinado usuário especificando seu email", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados retornados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuario não encontrado")
+    })
+    @GetMapping("/email/{emailUsuario}")
+    public ResponseEntity<Object> exibirUsuarioEmail(@PathVariable(value = "emailUsuario") String email) {
+        Optional<UserDetails> usuarioBuscado = Optional.ofNullable(usuarioRepository.findByEmail(email));
+//        UserDetails usuario = usuarioRepository.findByEmail(email);
 
         if (usuarioBuscado.isEmpty()) {
             // Retornar usuario não encontrado

@@ -7,7 +7,7 @@ import java.util.UUID;
 public record ProdutoDto(
         @NotNull String nome,
         Integer quantidade,
-        @NotNull UUID categoria_id,
+        String categoria_id,
         @NotNull UUID anuncio_id
 ) {
 

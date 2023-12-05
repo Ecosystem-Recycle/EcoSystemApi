@@ -2,7 +2,9 @@ package com.senai.apiecosystem.controllers;
 
 
 import com.senai.apiecosystem.dtos.ProdutoDto;
+import com.senai.apiecosystem.models.CategoriaModel;
 import com.senai.apiecosystem.models.ProdutoModel;
+import com.senai.apiecosystem.models.TipoStatusModel;
 import com.senai.apiecosystem.repositories.AnuncioRepository;
 import com.senai.apiecosystem.repositories.CategoriaRepository;
 import com.senai.apiecosystem.repositories.ProdutoRepository;
@@ -69,7 +71,8 @@ public class ProdutoController {
 
         BeanUtils.copyProperties(produtoDto, produtoModel);
 
-        var categoria = categoriaRepository.findById(produtoDto.categoria_id());
+        Optional<CategoriaModel> categoria = categoriaRepository.findByNome(produtoDto.categoria_id());
+
         var anuncio = anuncioRepository.findById(produtoDto.anuncio_id());
 
         if (categoria.isPresent() && anuncio.isPresent()) {
