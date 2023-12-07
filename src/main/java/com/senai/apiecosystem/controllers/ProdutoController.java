@@ -2,6 +2,7 @@ package com.senai.apiecosystem.controllers;
 
 
 import com.senai.apiecosystem.dtos.ProdutoDto;
+import com.senai.apiecosystem.models.AnuncioModel;
 import com.senai.apiecosystem.models.CategoriaModel;
 import com.senai.apiecosystem.models.ProdutoModel;
 import com.senai.apiecosystem.models.TipoStatusModel;
@@ -14,10 +15,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,6 +62,20 @@ public class ProdutoController {
 
         return ResponseEntity.status(HttpStatus.OK).body(produtoBuscado.get());
     }
+    @Operation(summary = "Método para CONSULTAR um determinado produto via ID do Anuncio", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados retornados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Lista de Produtos não encontrado")
+    })
+    @GetMapping("anuncio/{idAnuncio}")
+    public ResponseEntity<List<ProdutoModel>> exibirProdutoAnuncio(@PathVariable(value = "idAnuncio") UUID id) {
+        var produtoBuscado = produtoRepository.findProdAnuncioById(id);
+
+        if (produtoBuscado.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(produtoRepository.findProdAnuncioById(id));
+    }
 
     @Operation(summary = "Método para CADASTRAR um novo produto", method = "POST")
     @ApiResponses(value = {
@@ -71,7 +88,7 @@ public class ProdutoController {
 
         BeanUtils.copyProperties(produtoDto, produtoModel);
 
-        Optional<CategoriaModel> categoria = categoriaRepository.findByNome(produtoDto.categoria_id());
+        Optional<CategoriaModel> categoria = categoriaRepository.findByNome(produtoDto.categoria());
 
         var anuncio = anuncioRepository.findById(produtoDto.anuncio_id());
 
