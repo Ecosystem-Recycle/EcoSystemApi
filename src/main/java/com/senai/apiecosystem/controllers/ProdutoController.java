@@ -2,10 +2,8 @@ package com.senai.apiecosystem.controllers;
 
 
 import com.senai.apiecosystem.dtos.ProdutoDto;
-import com.senai.apiecosystem.models.AnuncioModel;
 import com.senai.apiecosystem.models.CategoriaModel;
 import com.senai.apiecosystem.models.ProdutoModel;
-import com.senai.apiecosystem.models.TipoStatusModel;
 import com.senai.apiecosystem.repositories.AnuncioRepository;
 import com.senai.apiecosystem.repositories.CategoriaRepository;
 import com.senai.apiecosystem.repositories.ProdutoRepository;
@@ -15,12 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,6 +93,31 @@ public class ProdutoController {
             produtoModel.setAnuncio(anuncio.get());
         } else {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID Categoria ou ID Anuncio não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produtoModel));
+    }
+
+    @Operation(summary = "Método para CADASTRAR um novo Produto por MULTIPART", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cadastro de Anuncio com Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    })
+
+    @PostMapping("/model")
+    public ResponseEntity<Object> cadastrarProdutoMedia(@ModelAttribute @Valid ProdutoDto produtoDto) {
+        ProdutoModel produtoModel = new ProdutoModel();
+        BeanUtils.copyProperties(produtoDto, produtoModel);
+
+        Optional<CategoriaModel> categoria = categoriaRepository.findByNome(produtoDto.categoria());
+
+        var anuncio = anuncioRepository.findById(produtoDto.anuncio_id());
+
+        if (categoria.isPresent() && anuncio.isPresent()) {
+            produtoModel.setCategoria(categoria.get());
+            produtoModel.setAnuncio(anuncio.get());
+        } else {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID anuncio não encontrado");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produtoModel));
