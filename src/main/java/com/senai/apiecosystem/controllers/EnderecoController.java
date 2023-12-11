@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,8 +56,11 @@ public class EnderecoController {
             @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     })
     @PostMapping
-    public ResponseEntity<Object> cadastrarEndereco(@RequestBody @Valid EnderecoDto enderecoDto) {
+    public ResponseEntity<Object> cadastrarEndereco(@Valid EnderecoDto enderecoDto) {
         EnderecoModel Endereco = new EnderecoModel();
+        var setLogradouro = "Atualize seus dados";
+
+
         BeanUtils.copyProperties(enderecoDto, Endereco);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(enderecoRepository.save(Endereco));
@@ -69,6 +73,25 @@ public class EnderecoController {
     })
     @PutMapping(value = "/{idEndereco}")
     public ResponseEntity<Object> editarEndereco(@PathVariable(value = "idEndereco") UUID id, @RequestBody @Valid EnderecoDto enderecoDto) {
+        Optional<EnderecoModel> enderecoBuscado = enderecoRepository.findById(id);
+
+        if (enderecoBuscado.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Endereço não encontrado");
+        }
+
+        EnderecoModel endereco = enderecoBuscado.get();
+        BeanUtils.copyProperties(enderecoDto, endereco);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(enderecoRepository.save(endereco));
+    }
+
+    @Operation(summary = "Método para ALTERAR um determinado endereco especificando seu ID", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alteração de endereço com sucesso"),
+            @ApiResponse(responseCode = "404", description = "endereço não encontrado")
+    })
+    @PutMapping(value = "/media/{idEndereco}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Object> editarEnderecoMedia(@PathVariable(value = "idEndereco") UUID id,@ModelAttribute @Valid EnderecoDto enderecoDto) {
         Optional<EnderecoModel> enderecoBuscado = enderecoRepository.findById(id);
 
         if (enderecoBuscado.isEmpty()) {

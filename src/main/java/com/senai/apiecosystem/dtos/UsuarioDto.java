@@ -16,7 +16,7 @@ public record UsuarioDto(
 
         String cpf_Cnpj,
 
-        String tipo_User,
+        @NotBlank String tipo_User,
 
         UUID endereco_id
 

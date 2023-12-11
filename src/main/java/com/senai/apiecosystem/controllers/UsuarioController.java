@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -104,7 +105,45 @@ public class UsuarioController {
         }else{
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID do Tipo Usuario não encontrado");
         }
+        Optional<EnderecoModel> endereco = enderecoRepository.findById(usuarioDto.endereco_id());
 
+        if (endereco.isPresent()) {
+            usuarioNovo.setEndereco(endereco.get());
+        } else {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id_Endereço não encontrado");
+        }
+
+
+
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.senha());
+        usuarioNovo.setSenha(senhaCriptografada);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRepository.save(usuarioNovo));
+    }
+
+    @Operation(summary = "Método para CRIAR um novo usuário como MEDIAPART", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cadastro de Usuário com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    })
+    @PostMapping(value = "/login", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Object> cadastrarUsuarioLogin(@ModelAttribute @Valid UsuarioDto usuarioDto) {
+        if (usuarioRepository.findByEmail(usuarioDto.email()) != null) {
+            // Não pode cadastrar
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Esse email já está cadastrado!");
+        }
+
+        UsuarioModel usuarioNovo = new UsuarioModel();
+
+        BeanUtils.copyProperties(usuarioDto, usuarioNovo);
+
+        Optional<TipoUsuarioModel> tipoUsuario = tipoUsuarioRepository.findByNome(usuarioDto.tipo_User());
+
+        if (tipoUsuario.isPresent()) {
+            usuarioNovo.setTipousuario(tipoUsuario.get());
+        }else{
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID do Tipo Usuario não encontrado");
+        }
         Optional<EnderecoModel> endereco = enderecoRepository.findById(usuarioDto.endereco_id());
 
         if (endereco.isPresent()) {
@@ -131,7 +170,37 @@ public class UsuarioController {
         Optional<UsuarioModel> usuarioBuscado = usuarioRepository.findById(id);
 
         if (usuarioBuscado.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario não encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User no");
+        }
+
+
+        UsuarioModel usuario = usuarioBuscado.get();
+        BeanUtils.copyProperties(usuarioDto, usuario);
+
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDto.senha());
+        usuario.setSenha(senhaCriptografada);
+
+        Optional<TipoUsuarioModel> tipoUsuario = tipoUsuarioRepository.findByNome(usuarioDto.tipo_User());
+        if (tipoUsuario.isPresent()) {
+            usuario.setTipousuario(tipoUsuario.get());
+        }else{
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID Tipo Usuario não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRepository.save(usuario));
+    }
+
+    @Operation(summary = "Método para ALTERAR um determinado usuário especificando sua ID via MediaPart", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alteração de usuário com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuario não encontrado")
+    })
+    @PutMapping(value = "/media/{idUsuario}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Object> editarUsuarioMedia(@PathVariable(value = "idUsuario") UUID id, @ModelAttribute @Valid UsuarioDto usuarioDto) {
+        Optional<UsuarioModel> usuarioBuscado = usuarioRepository.findById(id);
+
+        if (usuarioBuscado.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
 

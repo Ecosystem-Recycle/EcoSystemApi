@@ -67,8 +67,44 @@ public class AnuncioController {
             @ApiResponse(responseCode = "201", description = "Cadastro de Anuncio com Sucesso"),
             @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     })
+    @PostMapping(value = "/json")
+    public ResponseEntity<Object> cadastrarAnuncio(@RequestBody @Valid AnuncioDto anuncioDto) {
+        AnuncioModel anuncioModel = new AnuncioModel();
+        BeanUtils.copyProperties(anuncioDto, anuncioModel);
+
+        var usuario = usuarioRepository.findById(anuncioDto.usuario_id());
+        Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(anuncioDto.tipo_status());
+
+        LocalDate date = LocalDate.now();
+
+        String urlImagem;
+        try {
+            urlImagem = fileUploadService.FazerUpload(anuncioDto.imagem());
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+
+        if (usuario.isPresent() && tipoStatus.isPresent()) {
+            anuncioModel.setUsuario_doador(usuario.get());
+            anuncioModel.setTipo_status_anuncio(tipoStatus.get());
+            anuncioModel.setData_cadastro(date);
+            anuncioModel.setUrl_imagem(urlImagem);
+
+        } else {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id_usuario ou id_produto não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(anuncioRepository.save(anuncioModel));
+    }
+
+    @Operation(summary = "Método para CADASTRAR um novo anuncio", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cadastro de Anuncio com Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    })
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Object> cadastrarAnuncio(@ModelAttribute @Valid AnuncioDto anuncioDto) {
+    public ResponseEntity<Object> cadastrarAnuncioMediaPart(@ModelAttribute @Valid AnuncioDto anuncioDto) {
         AnuncioModel anuncioModel = new AnuncioModel();
         BeanUtils.copyProperties(anuncioDto, anuncioModel);
 
