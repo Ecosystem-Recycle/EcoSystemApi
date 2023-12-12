@@ -2,6 +2,7 @@ package com.senai.apiecosystem.controllers;
 
 import com.senai.apiecosystem.dtos.ColetaDto;
 import com.senai.apiecosystem.models.ColetaModel;
+import com.senai.apiecosystem.models.TipoStatusModel;
 import com.senai.apiecosystem.repositories.AnuncioRepository;
 import com.senai.apiecosystem.repositories.ColetaRepository;
 import com.senai.apiecosystem.repositories.TipoStatusRepository;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,7 +77,7 @@ public class ColetaController {
 
         var usuario = usuarioRepository.findById(coletaDto.usuario_id());
         var anuncio = anuncioRepository.findById(coletaDto.anuncio_id());
-        var tipoStatus = tipoStatusRepository.findById(coletaDto.tipo_status_id());
+        Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(coletaDto.tipo_status());
         LocalDate date = LocalDate.now();
 
         if (usuario.isPresent() && anuncio.isPresent() && tipoStatus.isPresent()) {
@@ -90,6 +92,37 @@ public class ColetaController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(coletaRepository.save(coletaModel));
     }
+
+    @Operation(summary = "Método para CADASTRAR uma nova Coleta como Media", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Coleta cadastrada com Sucesso"),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    })
+    @PostMapping(value = "/media",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Object> cadastrarColetaMedia(@ModelAttribute @Valid ColetaDto coletaDto) {
+        ColetaModel coletaModel = new ColetaModel();
+
+        BeanUtils.copyProperties(coletaDto, coletaModel);
+
+        var usuario = usuarioRepository.findById(coletaDto.usuario_id());
+        var anuncio = anuncioRepository.findById(coletaDto.anuncio_id());
+        Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(coletaDto.tipo_status());
+        LocalDate date = LocalDate.now();
+
+        if (usuario.isPresent() && anuncio.isPresent() && tipoStatus.isPresent()) {
+            coletaModel.setUsuario_coleta(usuario.get());
+            coletaModel.setAnuncio(anuncio.get());
+            coletaModel.setTipo_status_coleta(tipoStatus.get());
+            coletaModel.setData_cadastro(date);
+
+        } else {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID Usuario ou ID Anuncio ou ID Tipo de Status não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(coletaRepository.save(coletaModel));
+    }
+
+
 
     @Operation(summary = "Método para ALTERAR uma determinada coleta especificando seu ID", method = "PUT")
     @ApiResponses(value = {
@@ -115,7 +148,7 @@ public class ColetaController {
             @ApiResponse(responseCode = "204", description = "Coleta deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Coleta não encontrada")
     })
-    @DeleteMapping("/{idColeta}")
+    @DeleteMapping(value = "/{idColeta}")
     public ResponseEntity<Object> deletarColeta(@PathVariable(value = "idColeta") UUID id) {
         Optional<ColetaModel> coletaBuscado = coletaRepository.findById(id);
 

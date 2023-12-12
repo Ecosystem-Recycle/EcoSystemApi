@@ -13,7 +13,7 @@ public record ColetaDto(
 
         @NotNull UUID anuncio_id,
 
-        @NotNull UUID tipo_status_id
+        @NotBlank String tipo_status
 
 ) {
 
