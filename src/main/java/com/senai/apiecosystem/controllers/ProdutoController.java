@@ -107,32 +107,6 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produtoModel));
     }
 
-    @Operation(summary = "Método para CADASTRAR um novo Produto por MULTIPART", method = "POST")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Cadastro de Produtos do Anuncio com Sucesso"),
-            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
-    })
-//    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    @PostMapping("/model")
-    public ResponseEntity<Object> cadastrarProdutoMedia(@ModelAttribute @Valid ProdutoDto produtoDto) {
-        ProdutoModel produtoModel = new ProdutoModel();
-        BeanUtils.copyProperties(produtoDto, produtoModel);
-
-        Optional<CategoriaModel> categoria = categoriaRepository.findByNome(produtoDto.categoria());
-
-        var anuncio = anuncioRepository.findById(produtoDto.anuncio_id());
-
-
-        if (categoria.isPresent() && anuncio.isPresent()) {
-            produtoModel.setCategoria(categoria.get());
-            produtoModel.setAnuncio(anuncio.get());
-        } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ID anuncio não encontrado");
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produtoModel));
-    }
-
     @Operation(summary = "Método para ALTERAR um determinado produto especificando seu ID", method = "PUT")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Alteração do produto com sucesso"),

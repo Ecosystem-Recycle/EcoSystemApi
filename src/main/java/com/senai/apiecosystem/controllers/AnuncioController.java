@@ -109,16 +109,26 @@ public class AnuncioController {
         BeanUtils.copyProperties(anuncioDto, anuncioModel);
 
         var usuario = usuarioRepository.findById(anuncioDto.usuario_id());
+
         Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(anuncioDto.tipo_status());
 
         LocalDate date = LocalDate.now();
 
         String urlImagem;
-        try {
-            urlImagem = fileUploadService.FazerUpload(anuncioDto.imagem());
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        if (anuncioDto.imagem()==null){
+            urlImagem = "default.jpg";
+        } else if (anuncioDto.imagem().isEmpty() || anuncioDto.imagem().equals("undefined") ){
+            urlImagem = "default.jpg";
+        }else {
+            try {
+                urlImagem = fileUploadService.FazerUpload(anuncioDto.imagem());
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
         }
+
+
+
 
 
         if (usuario.isPresent() && tipoStatus.isPresent()) {

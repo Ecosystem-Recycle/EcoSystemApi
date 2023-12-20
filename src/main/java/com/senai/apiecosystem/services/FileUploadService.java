@@ -20,8 +20,14 @@ public class FileUploadService {
         if (imagem.isEmpty()){
             System.out.println("Imagem vazia");
             return null;
+            //String defaultImg = "default.jpg";
+            //return  defaultImg;
         }
         String nomeOriginal = imagem.getOriginalFilename();
+
+        if (nomeOriginal.equals("default.jpg")){
+            return nomeOriginal;
+        }
         String[] nomeArquivoArray = nomeOriginal.split("\\.");
 
         String extensaoArquivo = nomeArquivoArray[nomeArquivoArray.length - 1];
