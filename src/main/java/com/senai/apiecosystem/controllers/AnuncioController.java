@@ -157,8 +157,6 @@ public class AnuncioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Anuncio não encontrado");
         }
 
-
-
         AnuncioModel anuncio = anuncioBuscado.get();
 
         BeanUtils.copyProperties(anuncioDto, anuncio);
@@ -174,30 +172,23 @@ public class AnuncioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(anuncioRepository.save(anuncio));
     }
 
-    @PutMapping(value = "/status/{idAnuncio}")
-
-    public ResponseEntity<Object> editarStatusAnuncio(@PathVariable(value = "idAnuncio") UUID id,  @RequestBody @Valid AnuncioDto anuncioDto) {
+    @PatchMapping(value = "/status/{idAnuncio}")
+    public ResponseEntity<Object> editarStatusAnuncio(@PathVariable(value = "idAnuncio") UUID id,  @RequestBody AnuncioDto anuncioDto) {
         Optional<AnuncioModel> anuncioBuscado = anuncioRepository.findById(id);
 
         if (anuncioBuscado.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Anuncio não encontrado");
         }
 
-        var usuario = usuarioRepository.findById(anuncioDto.usuario_id());
-
         Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(anuncioDto.tipo_status());
 
         AnuncioModel anuncio = anuncioBuscado.get();
 
-        if (usuario.isPresent() && tipoStatus.isPresent()) {
-            anuncio.setUsuario_doador(usuario.get());
-            anuncio.setTipo_status_anuncio(tipoStatus.get());
+        anuncio.setTipo_status_anuncio(tipoStatus.get());
 
-        } else {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id_usuario ou id_produto não encontrado");
-        }
-
-        BeanUtils.copyProperties(anuncioDto, anuncio);
+        BeanUtils.copyProperties(anuncio, anuncioDto);
+        System.out.println(anuncioDto);
+        System.out.println(anuncio.getTipo_status_anuncio());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(anuncioRepository.save(anuncio));
     }
