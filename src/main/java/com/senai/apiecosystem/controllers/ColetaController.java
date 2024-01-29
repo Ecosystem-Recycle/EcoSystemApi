@@ -1,6 +1,8 @@
 package com.senai.apiecosystem.controllers;
 
+import com.senai.apiecosystem.dtos.AnuncioDto;
 import com.senai.apiecosystem.dtos.ColetaDto;
+import com.senai.apiecosystem.models.AnuncioModel;
 import com.senai.apiecosystem.models.ColetaModel;
 import com.senai.apiecosystem.models.TipoStatusModel;
 import com.senai.apiecosystem.repositories.AnuncioRepository;
@@ -139,6 +141,30 @@ public class ColetaController {
 
         ColetaModel coleta = coletaBuscada.get();
         BeanUtils.copyProperties(coletaDto, coleta);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(coletaRepository.save(coleta));
+    }
+
+    @Operation(summary = "Método para Alterar dados parcial de uma determinada coleta especificando seu ID", method = "PATCH")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alteração de coleta com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Coleta não encontrada")
+    })
+    @PatchMapping(value = "/status/{idColeta}")
+    public ResponseEntity<Object> editarStatusColeta(@PathVariable(value = "idColeta") UUID id,  @RequestBody ColetaDto coletaDto) {
+        Optional<ColetaModel> coletaBuscada = coletaRepository.findById(id);
+
+        if (coletaBuscada.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Coleta não encontrada");
+        }
+
+        Optional<TipoStatusModel> tipoStatus = tipoStatusRepository.findByNome(coletaDto.tipo_status());
+
+        ColetaModel coleta = coletaBuscada.get();
+
+        coleta.setTipo_status_coleta(tipoStatus.get());
+
+        BeanUtils.copyProperties(coleta, coletaDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(coletaRepository.save(coleta));
     }

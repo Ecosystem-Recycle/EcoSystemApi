@@ -172,6 +172,11 @@ public class AnuncioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(anuncioRepository.save(anuncio));
     }
 
+    @Operation(summary = "Método para Alterar dados parcial de um determinado anuncio especificando seu ID", method = "PATCH")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Alteração de anuncio com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Anuncio não encontrado")
+    })
     @PatchMapping(value = "/status/{idAnuncio}")
     public ResponseEntity<Object> editarStatusAnuncio(@PathVariable(value = "idAnuncio") UUID id,  @RequestBody AnuncioDto anuncioDto) {
         Optional<AnuncioModel> anuncioBuscado = anuncioRepository.findById(id);
@@ -187,8 +192,6 @@ public class AnuncioController {
         anuncio.setTipo_status_anuncio(tipoStatus.get());
 
         BeanUtils.copyProperties(anuncio, anuncioDto);
-        System.out.println(anuncioDto);
-        System.out.println(anuncio.getTipo_status_anuncio());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(anuncioRepository.save(anuncio));
     }
