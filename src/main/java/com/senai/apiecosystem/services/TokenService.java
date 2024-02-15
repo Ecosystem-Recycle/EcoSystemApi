@@ -27,8 +27,11 @@ public class TokenService {
                     .withSubject(usuario.getEmail())
                     //Expiração do TOKEN
                     .withExpiresAt(gerarValidadeToken())
+                    //Linha abaixo adicionada para tratativa com mobile
+                    .withClaim("idUsuario", usuario.getId().toString())
                     //.withClaim("nomeUsuario", usuario.getNome())
                     .sign(algoritimo);
+
 
             return token;
 
